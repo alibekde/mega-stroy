@@ -44,3 +44,4 @@ Mijoz botga birinchi kirganda `/start` qiladi va telefon raqamini **Contact** si
 # mega_stroy
 # mega_stroy_bot
 # mega_stroy
+# mega_stroy
