@@ -14,8 +14,13 @@ from .services import customers_inactive_days, monthly_report
 from .utils import fmt_amount
 
 
-async def setup_jobs(bot: Bot, db: Db, tz: str, admin_id: int) -> None:
-    scheduler = AsyncIOScheduler(timezone=tz)
+async def setup_jobs(bot: Bot, db: Db, tz: str, admin_ids: tuple[int, ...]) -> None:
+    from zoneinfo import ZoneInfo
+    try:
+        tz_obj = ZoneInfo(tz)
+    except Exception:
+        tz_obj = ZoneInfo("UTC")  # fallback
+    scheduler = AsyncIOScheduler(timezone=tz_obj)
 
     async def monthly_job() -> None:
         from datetime import date
@@ -28,20 +33,22 @@ async def setup_jobs(bot: Bot, db: Db, tz: str, admin_id: int) -> None:
             f"Savdolar soni: {rep['count']}\n"
             f"O‘sish: {rep['growth_pct']:.2f}%"
         )
-        try:
-            await bot.send_message(admin_id, msg)
-        except Exception:
-            pass
+        for aid in admin_ids:
+            try:
+                await bot.send_message(aid, msg)
+            except Exception:
+                pass
 
     async def inactivity_job() -> None:
         inacts = await customers_inactive_days(db, days=30, tz=tz)
         if not inacts:
             return
-        try:
-            names = ", ".join([f"#{c.id} {c.full_name}" for c in inacts[:20]])
-            await bot.send_message(admin_id, f"⏰ 30 kun inaktiv mijozlar: {names}")
-        except Exception:
-            pass
+        names = ", ".join([f"#{c.id} {c.full_name}" for c in inacts[:20]])
+        for aid in admin_ids:
+            try:
+                await bot.send_message(aid, f"⏰ 30 kun inaktiv mijozlar: {names}")
+            except Exception:
+                pass
 
         # optional reminder to customers
         for c in inacts:
@@ -67,7 +74,7 @@ async def amain() -> None:
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(build_router(db, cfg))
 
-    await setup_jobs(bot, db, cfg.tz, cfg.admin_telegram_id)
+    await setup_jobs(bot, db, cfg.tz, cfg.admin_telegram_ids)
     try:
         await bot.delete_webhook(drop_pending_updates=True)
     except Exception:

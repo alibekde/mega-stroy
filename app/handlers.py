@@ -72,7 +72,7 @@ def build_router(db: Db, cfg: Config) -> Router:
     router = Router()
 
     def is_admin(telegram_id: int) -> bool:
-        return telegram_id == cfg.admin_telegram_id
+        return int(telegram_id) in set(cfg.admin_telegram_ids)
 
     async def show_menu(message: Message) -> None:
         if is_admin(message.from_user.id):
@@ -127,7 +127,7 @@ def build_router(db: Db, cfg: Config) -> Router:
         role = "admin" if is_admin(tid) else "mijoz"
         await message.answer(
             f"Sizning Telegram ID: <code>{tid}</code>\n"
-            f"Sozlangan ADMIN_TELEGRAM_ID: <code>{cfg.admin_telegram_id}</code>\n"
+            f"Sozlangan ADMIN_TELEGRAM_ID(S): <code>{','.join(map(str, cfg.admin_telegram_ids))}</code>\n"
             f"Rol: <b>{role}</b>",
             parse_mode="HTML",
         )
