@@ -123,3 +123,4 @@ python -m app.main
 - Mijoz botga birinchi marta `/start` qilganda telefon raqamini **Contact** sifatida yuboradi
 - Admin bazada telefon bo'lsa, akkaunt avtomatik bog'lanadi
 - Barcha amallar audit log'da saqlanadi
+# mega_stroy
