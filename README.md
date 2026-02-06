@@ -41,3 +41,4 @@ python -m app.main
 ### Eslatma
 Mijoz botga birinchi kirganda `/start` qiladi va telefon raqamini **Contact** sifatida yuboradi (button bor). Admin bazada o‘sha telefon bo‘lsa, akkaunt chat_id bilan bog‘lanadi.
 
+# mega_stroy
