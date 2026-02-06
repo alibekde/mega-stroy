@@ -68,6 +68,10 @@ async def amain() -> None:
     dp.include_router(build_router(db, cfg))
 
     await setup_jobs(bot, db, cfg.tz, cfg.admin_telegram_id)
+    try:
+        await bot.delete_webhook(drop_pending_updates=True)
+    except Exception:
+        pass
     await dp.start_polling(bot)
 
 
